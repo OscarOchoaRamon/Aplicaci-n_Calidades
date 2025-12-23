@@ -254,14 +254,12 @@ def create_chart(df, parameter, selected_columns=None, date_angle=-90, legend_po
 
             # Add Line Trace
             fig.add_trace(go.Scatter(
-                x=station_data['fecha'],
-                y=station_data['valor'],
-                mode='markers',
-                name=station,
-                marker=dict(
-                    size=4.0, # Increased by 50% from 2.7
-                    symbol=marker_symbol
-                ) 
+                x=[subset['fecha'].min(), subset['fecha'].max()],
+                y=[val, val],
+                mode='lines',
+                name=label,
+                line=dict(color=color, dash=dash, width=width),
+                hoverinfo='name+y'
             ))
             
     # Layout updates with custom styling
@@ -385,5 +383,3 @@ def create_chart(df, parameter, selected_columns=None, date_angle=-90, legend_po
     fig.update_layout(font=dict(family="Bookman Old Style, serif", size=9, color="black"))
     
     return fig
-
-
