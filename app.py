@@ -6,21 +6,26 @@ import os
 import shutil
 
 # --- CUSTOM FONT REGISTRATION ---
-# Attempt to register Bookman Old Style if the file exists
-font_filename = "BookmanOldStyle.ttf"
-if os.path.exists(font_filename):
-    # Linux font directory
-    font_dir = os.path.expanduser("~/.fonts")
-    if not os.path.exists(font_dir):
-        os.makedirs(font_dir)
-    
-    target_path = os.path.join(font_dir, font_filename)
-    
-    # Copy only if it doesn't exist to save time
-    if not os.path.exists(target_path):
-        shutil.copy(font_filename, target_path)
-        # Refresh font cache
-        os.system("fc-cache -f -v")
+# --- CUSTOM FONT REGISTRATION ---
+# Attempt to register Bookman Old Style fonts if they exist
+# Windows filenames: BOOKOS.TTF (Regular), BOOKOSB.TTF (Bold), BOOKOSI.TTF (Italic), BOOKOSBI.TTF (Bold Italic)
+font_files = ["BOOKOS.TTF", "BOOKOSB.TTF", "BOOKOSI.TTF", "BOOKOSBI.TTF", "BookmanOldStyle.ttf"]
+font_dir = os.path.expanduser("~/.fonts")
+font_registered = False
+
+if not os.path.exists(font_dir):
+    os.makedirs(font_dir)
+
+for font_file in font_files:
+    if os.path.exists(font_file):
+        target_path = os.path.join(font_dir, font_file)
+        if not os.path.exists(target_path):
+            shutil.copy(font_file, target_path)
+            font_registered = True
+
+if font_registered:
+    # Refresh font cache
+    os.system("fc-cache -f -v")
 
 # Page Configuration
 st.set_page_config(
