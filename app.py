@@ -68,26 +68,7 @@ def landing_page():
             navigate_to('effluents')
             st.rerun()
 
-    # --- DEBUG SECTION (verify fonts) ---
-    with st.expander("🛠️ Diagnóstico de Fuentes (Debug)"):
-        st.write("Verificando instalación de Bookman...")
-        try:
-             # Run fc-list to check for Bookman
-             import subprocess
-             result = subprocess.run(["fc-list", ":family"], capture_output=True, text=True)
-             fonts = result.stdout
-             bookman_fonts = [line for line in fonts.split('\n') if "Bookman" in line or "BOOKOS" in line]
-             
-             if bookman_fonts:
-                 st.success(f"Fuentes Bookman detectadas en el sistema: {len(bookman_fonts)}")
-                 st.code("\n".join(bookman_fonts))
-             else:
-                 st.error("No se detectaron fuentes Bookman en el sistema.")
-                 st.text("Todas las fuentes detectadas (primeras 20):")
-                 st.code("\n".join(fonts.split('\n')[:20]))
-                 
-        except Exception as e:
-            st.error(f"Error ejecutando fc-list: {e}")
+
 
 def water_quality_module(module_type="surface"):
     """
