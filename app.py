@@ -7,24 +7,33 @@ import shutil
 
 # --- CUSTOM FONT REGISTRATION ---
 # --- CUSTOM FONT REGISTRATION ---
+# --- CUSTOM FONT REGISTRATION ---
 # Attempt to register Bookman Old Style fonts if they exist
 # Windows filenames: BOOKOS.TTF (Regular), BOOKOSB.TTF (Bold), BOOKOSI.TTF (Italic), BOOKOSBI.TTF (Bold Italic)
 font_files = ["BOOKOS.TTF", "BOOKOSB.TTF", "BOOKOSI.TTF", "BOOKOSBI.TTF", "BookmanOldStyle.ttf"]
-font_dir = os.path.expanduser("~/.fonts")
+
+# Target paths for Linux fonts (covering both standards)
+target_dirs = [
+    os.path.expanduser("~/.fonts"),
+    os.path.expanduser("~/.local/share/fonts")
+]
+
 font_registered = False
 
-if not os.path.exists(font_dir):
-    os.makedirs(font_dir)
+for font_dir in target_dirs:
+    if not os.path.exists(font_dir):
+        os.makedirs(font_dir, exist_ok=True)
 
-for font_file in font_files:
-    if os.path.exists(font_file):
-        target_path = os.path.join(font_dir, font_file)
-        if not os.path.exists(target_path):
+    for font_file in font_files:
+        if os.path.exists(font_file):
+            target_path = os.path.join(font_dir, font_file)
+            # Always overwrite to ensure we have the right version
             shutil.copy(font_file, target_path)
             font_registered = True
 
 if font_registered:
     # Refresh font cache
+    # Try multiple commands to be safe
     os.system("fc-cache -f -v")
 
 # Page Configuration
@@ -58,6 +67,27 @@ def landing_page():
         if st.button("🏭 Efluentes", use_container_width=True):
             navigate_to('effluents')
             st.rerun()
+
+    # --- DEBUG SECTION (verify fonts) ---
+    with st.expander("🛠️ Diagnóstico de Fuentes (Debug)"):
+        st.write("Verificando instalación de Bookman...")
+        try:
+             # Run fc-list to check for Bookman
+             import subprocess
+             result = subprocess.run(["fc-list", ":family"], capture_output=True, text=True)
+             fonts = result.stdout
+             bookman_fonts = [line for line in fonts.split('\n') if "Bookman" in line or "BOOKOS" in line]
+             
+             if bookman_fonts:
+                 st.success(f"Fuentes Bookman detectadas en el sistema: {len(bookman_fonts)}")
+                 st.code("\n".join(bookman_fonts))
+             else:
+                 st.error("No se detectaron fuentes Bookman en el sistema.")
+                 st.text("Todas las fuentes detectadas (primeras 20):")
+                 st.code("\n".join(fonts.split('\n')[:20]))
+                 
+        except Exception as e:
+            st.error(f"Error ejecutando fc-list: {e}")
 
 def water_quality_module(module_type="surface"):
     """
